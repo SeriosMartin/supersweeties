@@ -34,18 +34,10 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_298BFD3B1B854FE5B66C26CB9C6D28B1 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_83948034E61D40DFB891C3AF95FB9EA3 }}
 
-      - name: Set WEBSITE_RUN_FROM_PACKAGE to 0
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az functionapp config appsettings set \
-              --name sweetsdata \
-              --resource-group sweetsdata_group \
-              --settings WEBSITE_RUN_FROM_PACKAGE=0
-
       - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
         with:
           app-name: 'sweetsdata'
           slot-name: 'Production'
           package: '.'
+          remote-build: true
