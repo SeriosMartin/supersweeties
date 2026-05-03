@@ -9,13 +9,12 @@ Known system bugs (by design, for realistic dirty data):
                                     unit_price and line_total are always blank
 """
 from azure.identity import DefaultAzureCredential
+from azure.storage.filedatalake import DataLakeServiceClient
 import csv
 import random
 import os
+import io
 from datetime import datetime, timedelta
-
-# --- Config ---
-OUTPUT_DIR = r"C:\oltp_data"
 
 # --- 100 UK Customers (id, name, email, phone, town, region) ---
 CUSTOMERS = [
@@ -235,10 +234,6 @@ def make_orders(n):
 
         rows.append(row)
     return header, rows
-
-from azure.identity import DefaultAzureCredential
-from azure.storage.filedatalake import DataLakeServiceClient
-import io
 
 def write_to_adls(csv_content: str, filename: str):
     service = DataLakeServiceClient(
