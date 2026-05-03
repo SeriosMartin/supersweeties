@@ -9,7 +9,7 @@ app = func.FunctionApp()
 
 @app.timer_trigger(schedule="0 0 6 * * *",
                    arg_name="mytimer",
-                   run_on_startup=False)
+                   run_on_startup=True)
 def daily_sweets_data(mytimer: func.TimerRequest) -> None:
     n   = order_count_for_today()
     dow = datetime.now().strftime("%A")
