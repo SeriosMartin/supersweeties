@@ -14,14 +14,11 @@ def daily_sweets_data(mytimer: func.TimerRequest) -> None:
     n   = order_count_for_today()
     dow = datetime.now().strftime("%A")
     logging.info(f"Generating {n} orders ({dow})")
-
     orders_h, orders_d = make_orders(n)
-
     buf = io.StringIO()
     writer = csv.writer(buf)
     writer.writerow(orders_h)
     writer.writerows(orders_d)
-
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     write_to_adls(buf.getvalue(), f"orders_{ts}.csv")
     logging.info("Done.")
