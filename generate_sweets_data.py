@@ -234,18 +234,23 @@ def make_orders(n):
 
         rows.append(row)
     return header, rows
-
+  
 def write_to_adls(csv_content: str, filename: str):
-    service = DataLakeServiceClient(
-        account_url="https://supersweeties.dfs.core.windows.net",
-        credential=DefaultAzureCredential()
-    )
-    today = datetime.now()
-    fs = service.get_file_system_client("landing")   # <-- your container name
-    path = f"year={today.year}/month={today.month:02}/day={today.day:02}/{filename}"
-    file_client = fs.get_file_client(path)
-    encoded = csv_content.encode("utf-8")
-    file_client.upload_data(encoded, overwrite=True, length=len(encoded))
+    try:
+        service = DataLakeServiceClient(
+            account_url="https://supersweeties.dfs.core.windows.net",
+            credential=DefaultAzureCredential()
+        )
+        today = datetime.now()
+        fs = service.get_file_system_client("landing")
+        path = f"year={today.year}/month={today.month:02}/day={today.day:02}/{filename}"
+        file_client = fs.get_file_client(path)
+        encoded = csv_content.encode("utf-8")
+        file_client.upload_data(encoded, overwrite=True, length=len(encoded))
+    except Exception as e:
+        import logging
+        logging.error(f"ADLS write failed: {type(e).__name__}: {e}")
+        raise
 
 def main():
     ts  = datetime.now().strftime("%Y%m%d_%H%M%S")
