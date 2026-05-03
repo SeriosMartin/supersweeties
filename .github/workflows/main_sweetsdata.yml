@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install dependencies into target folder
+      - name: Install dependencies
         run: pip install -r requirements.txt --target=".python_packages/lib/site-packages"
 
       - name: Login to Azure
@@ -34,10 +34,11 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_298BFD3B1B854FE5B66C26CB9C6D28B1 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_83948034E61D40DFB891C3AF95FB9EA3 }}
 
-      - name: Deploy to Azure Functions
-        uses: Azure/functions-action@v1
-        with:
-          app-name: 'sweetsdata'
-          slot-name: 'Production'
-          package: '.'
-          remote-build: true
+      - name: Zip and deploy via Azure CLI
+        run: |
+          zip -r deploy.zip . --exclude "*.git*" --exclude "*__pycache__*" --exclude "*.venv*"
+          az functionapp deployment source config-zip \
+            --resource-group sweetsdata_group \
+            --name sweetsdata \
+            --src deploy.zip \
+            --build-remote true
